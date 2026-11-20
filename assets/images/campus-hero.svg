@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" width="1000" height="600">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0b2341"/>
+      <stop offset="50%" stop-color="#14365d"/>
+      <stop offset="100%" stop-color="#1e4976"/>
+    </linearGradient>
+    <linearGradient id="facadeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1000" height="600" fill="url(#skyGrad)"/>
+
+  <!-- Stars / Academic Night Sky subtle accents -->
+  <circle cx="150" cy="80" r="1.5" fill="#ffffff" opacity="0.6"/>
+  <circle cx="350" cy="50" r="1.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="700" cy="90" r="1.5" fill="#ffffff" opacity="0.6"/>
+  <circle cx="850" cy="60" r="1.5" fill="#ffffff" opacity="0.7"/>
+
+  <!-- Asansol Campus Grounds -->
+  <rect x="0" y="480" width="1000" height="120" fill="#14532d"/>
+  <polygon points="0,520 1000,520 1000,600 0,600" fill="#0f3d21"/>
+
+  <!-- Grand Academic Building Facade -->
+  <g transform="translate(150, 160)">
+    <!-- Base podium -->
+    <rect x="-30" y="300" width="760" height="30" fill="#334155"/>
+    <rect x="-10" y="285" width="720" height="15" fill="#475569"/>
+
+    <!-- Main central building -->
+    <rect x="180" y="60" width="340" height="230" fill="url(#facadeGrad)" stroke="#cbd5e1" stroke-width="2"/>
+    <!-- Left Wing -->
+    <rect x="20" y="100" width="160" height="190" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+    <!-- Right Wing -->
+    <rect x="520" y="100" width="160" height="190" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+
+    <!-- Classical Pediment (Triangular portico) -->
+    <polygon points="350,10 170,60 530,60" fill="#0f2b48" stroke="#c59b27" stroke-width="3"/>
+    <!-- Golden seal on pediment -->
+    <circle cx="350" cy="40" r="14" fill="#c59b27"/>
+    <circle cx="350" cy="40" r="10" fill="#0f2b48"/>
+
+    <!-- Stately Columns / Pillars -->
+    <rect x="210" y="60" width="22" height="230" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+    <rect x="280" y="60" width="22" height="230" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+    <rect x="395" y="60" width="22" height="230" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+    <rect x="465" y="60" width="22" height="230" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+
+    <!-- Building Inscription Header -->
+    <rect x="190" y="70" width="320" height="30" fill="#0b2239"/>
+    <text x="350" y="90" font-size="10" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="1.5">ASANSOL INSTITUTE OF ALLIED SCIENCES</text>
+
+    <!-- Grand Entrance Archway -->
+    <path d="M 315 290 L 315 210 A 35 35 0 0 1 385 210 L 385 290 Z" fill="#0c1a29" stroke="#c59b27" stroke-width="2"/>
+    
+    <!-- Symmetric Windows (Left Wing) -->
+    <g fill="#0284c7" opacity="0.85">
+      <rect x="40" y="125" width="28" height="40" rx="2"/>
+      <rect x="85" y="125" width="28" height="40" rx="2"/>
+      <rect x="130" y="125" width="28" height="40" rx="2"/>
+      <rect x="40" y="185" width="28" height="40" rx="2"/>
+      <rect x="85" y="185" width="28" height="40" rx="2"/>
+      <rect x="130" y="185" width="28" height="40" rx="2"/>
+      <rect x="40" y="240" width="28" height="40" rx="2"/>
+      <rect x="85" y="240" width="28" height="40" rx="2"/>
+      <rect x="130" y="240" width="28" height="40" rx="2"/>
+    </g>
+
+    <!-- Symmetric Windows (Right Wing) -->
+    <g fill="#0284c7" opacity="0.85">
+      <rect x="540" y="125" width="28" height="40" rx="2"/>
+      <rect x="585" y="125" width="28" height="40" rx="2"/>
+      <rect x="630" y="125" width="28" height="40" rx="2"/>
+      <rect x="540" y="185" width="28" height="40" rx="2"/>
+      <rect x="585" y="185" width="28" height="40" rx="2"/>
+      <rect x="630" y="185" width="28" height="40" rx="2"/>
+      <rect x="540" y="240" width="28" height="40" rx="2"/>
+      <rect x="585" y="240" width="28" height="40" rx="2"/>
+      <rect x="630" y="240" width="28" height="40" rx="2"/>
+    </g>
+
+    <!-- Indian National Tricolor Flag Mast on Rooftop -->
+    <line x1="350" y1="10" x2="350" y2="-45" stroke="#cbd5e1" stroke-width="3"/>
+    <polygon points="350,-45 385,-37 350,-28" fill="#ff9933"/>
+    <polygon points="350,-28 385,-20 350,-12" fill="#138808"/>
+    <rect x="350" y="-30" width="35" height="4" fill="#ffffff"/>
+  </g>
+</svg>

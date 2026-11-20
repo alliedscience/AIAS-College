@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <rect x="6" y="6" width="148" height="148" rx="8" fill="#9a3412" stroke="#fdba74" stroke-width="2.5"/>
+  <circle cx="80" cy="65" r="36" fill="#ffffff" fill-opacity="0.1" stroke="#ffedd5" stroke-width="1.5"/>
+  <!-- Sun & Open Educational Book -->
+  <circle cx="80" cy="50" r="13" fill="#fde047"/>
+  <path d="M80 62 L80 90 M80 72 C70 66 56 68 48 74 L48 96 C56 90 70 88 80 94 C90 88 104 90 112 96 L112 74 C104 68 90 66 80 72 Z" fill="#ffffff" stroke="#7c2d12" stroke-width="2" stroke-linejoin="round"/>
+  <text x="80" y="112" font-size="10" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" fill="#ffffff" text-anchor="middle">P.N. DAS ACADEMY</text>
+  <text x="80" y="124" font-size="8.5" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="700" fill="#fde047" text-anchor="middle">D.El.Ed COLLEGE</text>
+  <text x="80" y="137" font-size="7.5" font-family="'Plus Jakarta Sans', Arial, sans-serif" fill="#ffedd5" text-anchor="middle">NCTE • WBBPE AFFILIATED</text>
+</svg>

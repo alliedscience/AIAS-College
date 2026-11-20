@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" width="800" height="520">
+  <defs>
+    <linearGradient id="bgSky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="45%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#14532d"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#15803d"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="520" fill="url(#bgSky)"/>
+
+  <!-- Greenhouse Glass Framework Architecture -->
+  <polygon points="50,420 50,220 250,110 400,110 250,220 250,420" fill="#065f46" fill-opacity="0.4" stroke="#a7f3d0" stroke-width="1.5"/>
+  <polygon points="250,420 250,220 400,110 550,110 450,220 450,420" fill="#047857" fill-opacity="0.3" stroke="#a7f3d0" stroke-width="1.5"/>
+  <polygon points="450,420 450,220 550,110 750,110 750,220 750,420" fill="#065f46" fill-opacity="0.4" stroke="#a7f3d0" stroke-width="1.5"/>
+  
+  <!-- Hydroponic Vertical Racks & Healthy Crops -->
+  <rect x="0" y="380" width="800" height="140" fill="#0f172a"/>
+  
+  <!-- Tier 1 Racks -->
+  <rect x="40" y="340" width="360" height="30" rx="4" fill="#1e293b" stroke="#34d399" stroke-width="2"/>
+  <rect x="40" y="260" width="360" height="24" rx="4" fill="#1e293b" stroke="#34d399" stroke-width="2"/>
+  <rect x="40" y="190" width="360" height="20" rx="4" fill="#1e293b" stroke="#34d399" stroke-width="2"/>
+  <!-- Growing Plants / Lettuce heads -->
+  <g fill="url(#leafGrad)">
+    <!-- Top tier -->
+    <path d="M70,190 C60,170 80,165 90,190 C100,165 120,170 110,190 Z"/>
+    <path d="M130,190 C120,170 140,165 150,190 C160,165 180,170 170,190 Z"/>
+    <path d="M190,190 C180,170 200,165 210,190 C220,165 240,170 230,190 Z"/>
+    <path d="M250,190 C240,170 260,165 270,190 C280,165 300,170 290,190 Z"/>
+    <path d="M310,190 C300,170 320,165 330,190 C340,165 360,170 350,190 Z"/>
+    <!-- Middle tier -->
+    <path d="M65,260 C50,230 80,225 95,260 C110,225 140,230 125,260 Z"/>
+    <path d="M145,260 C130,230 160,225 175,260 C190,225 220,230 205,260 Z"/>
+    <path d="M225,260 C210,230 240,225 255,260 C270,225 300,230 285,260 Z"/>
+    <path d="M305,260 C290,230 320,225 335,260 C350,225 380,230 365,260 Z"/>
+    <!-- Bottom tier -->
+    <path d="M70,340 C50,300 90,290 110,340 C130,290 170,300 150,340 Z"/>
+    <path d="M170,340 C150,300 190,290 210,340 C230,290 270,300 250,340 Z"/>
+    <path d="M270,340 C250,300 290,290 310,340 C330,290 370,300 350,340 Z"/>
+  </g>
+
+  <!-- Agronomist Smart Tablet Interface -->
+  <g transform="translate(460, 150)">
+    <!-- Tablet body -->
+    <rect x="0" y="0" width="300" height="220" rx="10" fill="#022c22" stroke="#10b981" stroke-width="3"/>
+    <rect x="12" y="12" width="276" height="196" rx="6" fill="#041f1a"/>
+    <!-- Status header -->
+    <rect x="12" y="12" width="276" height="28" fill="#064e3b"/>
+    <circle cx="28" cy="26" r="5" fill="#34d399"/>
+    <text x="42" y="30" font-size="10.5" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="700" fill="#a7f3d0">SMART AGRI SENSOR NETWORK</text>
+    <!-- Sensor cards -->
+    <rect x="24" y="52" width="120" height="60" rx="4" fill="#065f46" stroke="#34d399" stroke-width="1"/>
+    <text x="34" y="68" font-size="9" font-family="sans-serif" fill="#6ee7b7">SOIL MOISTURE</text>
+    <text x="34" y="96" font-size="20" font-family="sans-serif" font-weight="bold" fill="#ffffff">68.4%</text>
+    <text x="96" y="96" font-size="9" font-family="sans-serif" fill="#34d399">OPTIMAL</text>
+
+    <rect x="156" y="52" width="120" height="60" rx="4" fill="#065f46" stroke="#34d399" stroke-width="1"/>
+    <text x="166" y="68" font-size="9" font-family="sans-serif" fill="#6ee7b7">PH LEVEL</text>
+    <text x="166" y="96" font-size="20" font-family="sans-serif" font-weight="bold" fill="#ffffff">6.4</text>
+    <text x="215" y="96" font-size="9" font-family="sans-serif" fill="#34d399">BALANCED</text>
+
+    <!-- Environmental Graph -->
+    <rect x="24" y="122" width="252" height="74" rx="4" fill="#062d25" stroke="#047857" stroke-width="1"/>
+    <path d="M 36 170 Q 70 140 110 160 T 180 145 T 260 155" fill="none" stroke="#fde047" stroke-width="2.5"/>
+    <text x="36" y="137" font-size="8.5" font-family="monospace" fill="#a7f3d0">N-P-K NUTRIENT CONCENTRATION ASSAY</text>
+  </g>
+
+  <!-- Title Badge Overlay -->
+  <rect x="24" y="24" width="280" height="52" rx="4" fill="#062e20" stroke="#10b981" stroke-width="1.5"/>
+  <text x="38" y="44" font-size="12" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="bold" fill="#6ee7b7" letter-spacing="1">AGRI-TECH &amp; SUSTAINABILITY</text>
+  <text x="38" y="63" font-size="14" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" fill="#ffffff">DIPLOMA IN AGRICULTURE • 2 YRS</text>
+</svg>
