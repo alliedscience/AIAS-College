@@ -10,7 +10,7 @@ export default definePrismaConfig({
     contract: prisma7Schema("prisma/schema.prisma"),
     output: "src/prisma",
     db: {
-      connection: process.env.DATABASE_URL!,
+      connection: "postgresql://postgres:postgres@localhost:5432/aias_db?schema=public",
     },
   }),
 });
