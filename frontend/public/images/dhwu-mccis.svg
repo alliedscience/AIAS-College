@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <defs>
+    <radialGradient id="dhwuGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0f2b48"/>
+      <stop offset="100%" stop-color="#061524"/>
+    </radialGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <circle cx="80" cy="80" r="74" fill="url(#dhwuGrad)" stroke="#c59b27" stroke-width="2.5" filter="url(#shadow)"/>
+  <circle cx="80" cy="80" r="66" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,2"/>
+  <circle cx="80" cy="80" r="62" fill="#ffffff" fill-opacity="0.05"/>
+  <!-- University Torch & Open Book -->
+  <path d="M80 54 L80 96 M80 66 C70 60 54 62 46 68 L46 98 C54 92 70 90 80 96 C90 90 106 92 114 98 L114 68 C106 62 90 60 80 66 Z" fill="#ffffff" fill-opacity="0.15" stroke="#c59b27" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Flaming Torch -->
+  <path d="M80 38 C75 45 74 50 78 56 C80 54 82 54 82 56 C86 50 85 45 80 38 Z" fill="#f59e0b"/>
+  <!-- Laurel of Excellence -->
+  <path d="M38 78 C35 94 44 110 60 118" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M122 78 C125 94 116 110 100 118" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="80" y="128" font-size="8.5" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="700" fill="#c59b27" text-anchor="middle" letter-spacing="1">DHWU • MCCIS</text>
+  <text x="80" y="138" font-size="6.5" font-family="'Plus Jakarta Sans', Arial, sans-serif" fill="#93c5fd" text-anchor="middle">ACADEMIC COLLABORATION</text>
+</svg>

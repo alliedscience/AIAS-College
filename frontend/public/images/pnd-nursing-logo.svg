@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <circle cx="80" cy="80" r="74" fill="#064e43" stroke="#2dd4bf" stroke-width="2.5"/>
+  <circle cx="80" cy="80" r="66" fill="none" stroke="#134e4a" stroke-width="1.5"/>
+  <circle cx="80" cy="65" r="32" fill="#ffffff"/>
+  <!-- Medical Red Cross -->
+  <path d="M73 45 H87 V58 H100 V72 H87 V85 H73 V72 H60 V58 H73 Z" fill="#dc2626"/>
+  <!-- Lamp of Care -->
+  <path d="M58 98 C58 94 68 91 80 91 C92 91 102 94 102 98 L96 104 H64 Z" fill="#f59e0b"/>
+  <circle cx="98" cy="90" r="3.5" fill="#fef08a"/>
+  <text x="80" y="122" font-size="10" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" fill="#ffffff" text-anchor="middle">P.N.D. NURSING</text>
+  <text x="80" y="136" font-size="7.5" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="600" fill="#5eead4" text-anchor="middle">INC • WBNC • WBUHS</text>
+</svg>

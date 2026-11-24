@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIAS Typography & Layout Preview</title>
+  
+  <!-- Google Fonts for all 3 classy options -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy: #102D4F;
+      --navy-950: #07172C;
+      --ivory: #F7F5EF;
+      --gold: #B99A62;
+      --gold-light: #D8C090;
+      --forest: #14532D;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--ivory);
+      color: var(--navy);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+
+    /* Fixed Top Control Bar */
+    .control-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #0B2545;
+      color: white;
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 2px solid var(--gold);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .control-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--gold-light);
+    }
+
+    .option-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .opt-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.2s ease;
+    }
+
+    .opt-btn:hover {
+      background: rgba(185, 154, 98, 0.3);
+      border-color: var(--gold);
+    }
+
+    .opt-btn.active {
+      background: var(--gold);
+      color: #07172C;
+      border-color: var(--gold-light);
+      box-shadow: 0 0 10px rgba(185, 154, 98, 0.5);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 20px;
+    }
+
+    /* Info Banner */
+    .info-card {
+      background: white;
+      border: 1px solid #E2E8F0;
+      border-left: 4px solid var(--gold);
+      padding: 18px 22px;
+      margin-bottom: 28px;
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .info-card h3 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+
+    .info-card p {
+      font-size: 13px;
+      color: #475569;
+    }
+
+    /* Live Preview Section */
+    .preview-frame {
+      background: white;
+      border: 1px solid #CBD5E1;
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(16, 45, 79, 0.1);
+      margin-bottom: 30px;
+    }
+
+    /* 1. New Cleaned Top Bar */
+    .top-strip {
+      background: var(--navy-950);
+      color: #CBD5E1;
+      font-size: 12px;
+      padding: 8px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .top-strip .tag {
+      background: #B91C1C;
+      color: white;
+      font-size: 10px;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 8px;
+    }
+
+    .top-strip .phone {
+      color: var(--gold-light);
+      font-weight: 700;
+      font-family: monospace;
+      font-size: 13px;
+    }
+
+    /* 2. Main Header */
+    .header-bar {
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #E2E8F0;
+      background: white;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 46px;
+      height: 46px;
+      background: var(--navy);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 900;
+      font-size: 13px;
+      border: 1px solid var(--gold);
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -0.2px;
+      line-height: 1.1;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--forest);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-login {
+      background: transparent;
+      border: 1.5px solid var(--navy);
+      color: var(--navy);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 9px 16px;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .btn-apply {
+      background: var(--navy);
+      border: 1.5px solid var(--navy-950);
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 9px 18px;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    /* 3. Hero Showcase */
+    .hero-box {
+      background: linear-gradient(180deg, #102D4F 0%, #07172C 100%);
+      color: white;
+      padding: 50px 36px;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .badge-session {
+      display: inline-block;
+      background: rgba(185, 154, 98, 0.2);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border-radius: 2px;
+      margin-bottom: 18px;
+    }
+
+    .hero-heading {
+      font-size: 38px;
+      font-weight: 700;
+      line-height: 1.18;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+      color: #FFFFFF;
+    }
+
+    .hero-lead {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #CBD5E1;
+      max-width: 780px;
+      margin-bottom: 24px;
+    }
+
+    /* 4. Content Cards */
+    .content-area {
+      padding: 36px 30px;
+      background: #FAF9F5;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+
+    .section-sub {
+      font-size: 13px;
+      color: #64748B;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #E2E8F0;
+      border-top: 3px solid var(--gold);
+      padding: 22px;
+      border-radius: 2px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .card-tag {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--forest);
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 12.5px;
+      color: #475569;
+      line-height: 1.55;
+    }
+
+    /* Dynamic Style Overrides based on Option */
+    /* OPTION 1: Oxford Heritage (Cormorant Garamond + Plus Jakarta Sans) */
+    body.opt-1 .brand-title {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      font-size: 17px;
+    }
+    body.opt-1 .hero-heading {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      line-height: 1.15;
+    }
+    body.opt-1 .section-title,
+    body.opt-1 .card-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+    body.opt-1 .card-title {
+      font-size: 20px;
+    }
+    body.opt-1,
+    body.opt-1 .hero-lead,
+    body.opt-1 .card-desc,
+    body.opt-1 .btn-login,
+    body.opt-1 .btn-apply {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* OPTION 2: Modern Ivy (Playfair Display + Outfit) */
+    body.opt-2 .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      font-size: 18px;
+    }
+    body.opt-2 .hero-heading {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 40px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    body.opt-2 .section-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 26px;
+    }
+    body.opt-2 .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    body.opt-2,
+    body.opt-2 .hero-lead,
+    body.opt-2 .card-desc,
+    body.opt-2 .btn-login,
+    body.opt-2 .btn-apply {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* OPTION 3: Cambridge Scholarly (EB Garamond + DM Sans) */
+    body.opt-3 .brand-title {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      font-size: 20px;
+    }
+    body.opt-3 .hero-heading {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 42px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    body.opt-3 .section-title,
+    body.opt-3 .card-title {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 25px;
+      font-weight: 600;
+    }
+    body.opt-3 .card-title {
+      font-size: 19px;
+    }
+    body.opt-3,
+    body.opt-3 .hero-lead,
+    body.opt-3 .card-desc,
+    body.opt-3 .btn-login,
+    body.opt-3 .btn-apply {
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* OPTION 0: Current Modern Tech (Manrope + Inter) */
+    body.opt-0 .brand-title,
+    body.opt-0 .hero-heading,
+    body.opt-0 .section-title,
+    body.opt-0 .card-title {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+    }
+    body.opt-0,
+    body.opt-0 .hero-lead,
+    body.opt-0 .card-desc,
+    body.opt-0 .btn-login,
+    body.opt-0 .btn-apply {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Footer Sample */
+    .sample-footer {
+      background: var(--navy-950);
+      color: #94A3B8;
+      padding: 24px 30px;
+      font-size: 11px;
+      border-top: 3px solid var(--gold);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-note {
+      color: #CBD5E1;
+    }
+  </style>
+</head>
+<body class="opt-1">
+
+  <!-- Interactive Control Bar -->
+  <div class="control-bar">
+    <div class="control-title">
+      ✦ AIAS Live Typography Preview (Click options to preview instantly):
+    </div>
+    <div class="option-buttons">
+      <button class="opt-btn active" onclick="setOption('opt-1', this)">
+        ★ Option 1: Oxford Heritage (Recommended)
+      </button>
+      <button class="opt-btn" onclick="setOption('opt-2', this)">
+        Option 2: Modern Ivy
+      </button>
+      <button class="opt-btn" onclick="setOption('opt-3', this)">
+        Option 3: Cambridge Scholarly
+      </button>
+      <button class="opt-btn" onclick="setOption('opt-0', this)">
+        Baseline (Current Manrope + Inter)
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Summary Card -->
+    <div class="info-card">
+      <h3 id="option-label">Option 1: The Oxford Heritage (Cormorant Garamond + Plus Jakarta Sans)</h3>
+      <p id="option-desc">
+        A regal, aristocratic academic aesthetic reminiscent of Oxford and traditional collegiate medicine. Features high-contrast Cormorant Garamond headings paired with ultra-crisp Plus Jakarta Sans for body elements.
+      </p>
+    </div>
+
+    <!-- Live Preview Frame -->
+    <div class="preview-frame">
+      
+      <!-- 1. Top Strip (Notice: Student Login and Admin Portal REMOVED) -->
+      <div class="top-strip">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="tag">Admissions 2026-27</span>
+          <span>Direct &amp; Counseling Enrollment Open for All 4 Institutions | Burnpur Riverside Road, Asansol</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <span class="phone">📞 1800 897 334</span>
+          <span style="color: rgba(255,255,255,0.2);">|</span>
+          <span style="color: var(--gold-light); font-weight: 600;">WBSCC Desk</span>
+        </div>
+      </div>
+
+      <!-- 2. Header Bar with Login Button on Front -->
+      <div class="header-bar">
+        <div class="brand-group">
+          <div class="brand-logo">AIAS</div>
+          <div>
+            <div class="brand-title">ASANSOL INSTITUTE OF ALLIED SCIENCES</div>
+            <div class="brand-sub">ESTD: 2026 • Paramedical • Agriculture • Nursing • Teacher Education</div>
+          </div>
+        </div>
+        <div class="nav-actions">
+          <button class="btn-login" title="Redirects to /login page">Login</button>
+          <button class="btn-apply">Apply for 2026 →</button>
+        </div>
+      </div>
+
+      <!-- 3. Hero Section -->
+      <div class="hero-box">
+        <div class="badge-session">☆ Academic Session 2026–2027 Open</div>
+        <h1 class="hero-heading">
+          Building Future Leaders in Allied Health, Agriculture &amp; Veterinary Sciences
+        </h1>
+        <p class="hero-lead">
+          Asansol Institute of Allied Sciences delivers rigorous, university-partnered diploma and degree programmes in formal academic collaboration with The Marie Curie Centre for Interdisciplinary Sciences (MCCIS), Diamond Harbour Women’s University.
+        </p>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn-apply" style="padding: 12px 24px; font-size: 12px; background: var(--gold); color: #07172C; border-color: var(--gold-light); font-weight: 800;">
+            Explore Programmes
+          </button>
+          <button class="btn-login" style="padding: 12px 24px; font-size: 12px; border-color: rgba(255,255,255,0.4); color: white;">
+            Admissions Desk 2026
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. Content Showcase -->
+      <div class="content-area">
+        <div class="section-title">Academic Programmes &amp; Clinical Training</div>
+        <div class="section-sub">Four Specialized Group Institutions • West Bengal</div>
+
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-tag">Allied Health Sciences</div>
+            <div class="card-title">Diploma in Medical Laboratory Technology (DMLT)</div>
+            <div class="card-desc">
+              2-Year comprehensive clinical pathology programme in academic collaboration with DHWU MCCIS. Modern diagnostic labs and hospital clinical internships.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-tag">Teacher Education</div>
+            <div class="card-title">Bachelor of Education (B.Ed — 12 Method Subjects)</div>
+            <div class="card-desc">
+              2-Year pedagogical degree at Bijoy Pal Memorial B.Ed College (Estd. 2007). NCTE recognized and affiliated to BSAEU (erstwhile WBUTTEPA).
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-tag">Nursing Academy</div>
+            <div class="card-title">General Nursing &amp; Midwifery (G.N.M) &amp; B.Sc Nursing</div>
+            <div class="card-desc">
+              Pramoth Nath Das Academy of Nursing. INC &amp; WBNC recognized with affiliation to West Bengal University of Health Sciences (WBUHS).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Sample Cleaned Footer -->
+      <div class="sample-footer">
+        <div class="footer-note">
+          &copy; 2026 Asansol Institute of Allied Sciences &amp; Group Institutions. All rights reserved.
+        </div>
+        <div>
+          <span>Admissions Policy</span> &nbsp;•&nbsp; 
+          <span>WBSCC Terms</span> &nbsp;•&nbsp; 
+          <span>Campus Contact</span>
+          <!-- Notice: Administration Login and Staff Login REMOVED from footer -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const descriptions = {
+      'opt-1': {
+        title: '★ Option 1: The Oxford Heritage (Cormorant Garamond + Plus Jakarta Sans) — RECOMMENDED',
+        desc: 'A regal, aristocratic academic aesthetic reminiscent of Oxford and traditional collegiate medicine. Features high-contrast Cormorant Garamond headings paired with ultra-crisp Plus Jakarta Sans for body elements.'
+      },
+      'opt-2': {
+        title: 'Option 2: The Modern Ivy (Playfair Display + Outfit)',
+        desc: 'A contemporary architectural university style. Playfair Display delivers elegant editorial contrast for main headlines, while Outfit brings a clean, modern executive geometry to subheadings and body copy.'
+      },
+      'opt-3': {
+        title: 'Option 3: The Cambridge Scholarly (EB Garamond + DM Sans)',
+        desc: 'A timeless literary and medical academy design. EB Garamond reflects classical academic publishing and clinical authority, paired with DM Sans for effortless reading on screens.'
+      },
+      'opt-0': {
+        title: 'Option 0: Baseline (Current Manrope + Inter)',
+        desc: 'The current modern tech sans-serif layout. Clean and functional, but can feel more like a SaaS/tech startup than a prestigious, classic medical and collegiate institution.'
+      }
+    };
+
+    function setOption(cls, btn) {
+      document.body.className = cls;
+      document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.getElementById('option-label').innerText = descriptions[cls].title;
+      document.getElementById('option-desc').innerText = descriptions[cls].desc;
+    }
+  </script>
+</body>
+</html>

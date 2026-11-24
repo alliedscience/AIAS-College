@@ -1,0 +1,251 @@
+// ==============================================================================
+// PRISMA SCHEMA - AIAS EDUCATION PORTAL
+// Database: PostgreSQL
+// Architecture: Centralized Multi-Institution Educational Platform
+// ==============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ------------------------------------------------------------------------------
+// ENUMS
+// ------------------------------------------------------------------------------
+
+enum Role {
+  SUPER_ADMIN          // Full system access across all institutions
+  INSTITUTION_ADMIN    // Scoped access to assigned institution
+  ADMISSION_MANAGER    // Admission enquiry management & follow-ups
+  CONTENT_EDITOR       // Content updates, notices, gallery
+}
+
+enum EnquiryStatus {
+  NEW                  // Just submitted by candidate
+  IN_REVIEW            // Opened by counselor
+  CONTACTED            // Spoke with candidate/parent
+  DOCUMENTS_PENDING    // Waiting for marksheets/WBSCC docs
+  ADMITTED             // Enrolled in institution
+  CLOSED               // Concluded/Not interested
+  REJECTED             // Ineligible/Spam
+}
+
+enum MediaCategory {
+  CAMPUS
+  LABORATORY
+  CLASSROOM
+  EVENT
+  LOGO
+  FACULTY
+  DOCUMENT
+}
+
+// ------------------------------------------------------------------------------
+// CORE ENTITIES
+// ------------------------------------------------------------------------------
+
+model Institution {
+  id               String       @id @default(cuid())
+  name             String       // e.g. "Asansol Institute of Allied Sciences"
+  shortName        String?      // e.g. "AIAS"
+  slug             String       @unique // e.g. "aias", "bijoy-pal-memorial"
+  code             String       @unique // e.g. "AIAS", "BPMBC", "PNDAN", "PNDA"
+  description      String       @db.Text
+  shortDescription String?      @db.Text
+  logo             String?      // Path/URL to institutional emblem
+  crest            String?      // High-res vector/crest asset
+  bannerImage      String?      // Hero campus photograph/illustration
+  address          String       // e.g. "Burnpur Riverside Road, Asansol, West Bengal"
+  phone            String       // Primary contact / Toll-free number
+  altPhone         String?      // Secondary helpline
+  email            String       // Admissions / Official desk email
+  affiliation      String       // Affiliation body (e.g. DHWU, BSAEU, WBUHS, WBBPE)
+  recognitions     String?      // Approvals (e.g. NCTE, INC, WBNC)
+  establishedYear  Int?         // e.g. 2026, 2007
+  theme            String?      @db.Text // JSON config: primary color, accent, badge style
+  published        Boolean      @default(true)
+  displayOrder     Int          @default(0)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  // Relations
+  courses          Course[]
+  enquiries        Enquiry[]
+  adminUsers       AdminUser[]
+  notices          Notice[]
+  media            Media[]
+
+  @@index([slug])
+  @@index([published])
+}
+
+model Course {
+  id                     String       @id @default(cuid())
+  institutionId          String
+  name                   String       // e.g. "Diploma in Medical Laboratory Technology"
+  shortName              String?      // e.g. "DMLT"
+  slug                   String       // e.g. "medical-laboratory-technology"
+  code                   String?      // e.g. "DMLT-01"
+  description            String       @db.Text
+  duration               String       // e.g. "2 Years"
+  durationYears          Decimal      @db.Decimal(3, 1) // e.g. 2.0, 3.0, 4.0
+  eligibility            String       @db.Text // e.g. "10+2 with Science (PCB/PCM)"
+  curriculum             String?      @db.Text // JSON or structured text of semester topics
+  careerProspects        String?      @db.Text // JSON or structured list of career roles
+  featuredImage          String?
+  isCreditCardEligible   Boolean      @default(true) // WBSCC support
+  hasPlacementAssistance Boolean      @default(true) // 100% placement support
+  tuitionFeeNote         String?      // Placeholder or verified note
+  displayOrder           Int          @default(0)
+  published              Boolean      @default(true)
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+
+  // Relations
+  institution            Institution  @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  enquiries              Enquiry[]
+
+  @@unique([institutionId, slug])
+  @@index([institutionId])
+  @@index([slug])
+  @@index([published])
+}
+
+model Enquiry {
+  id                   String            @id @default(cuid())
+  enquiryNumber        String            @unique // e.g. "AIAS-2026-1001"
+  studentName          String
+  phone                String
+  email                String?
+  institutionId        String
+  courseId             String
+  highestQualification String?           // e.g. "10+2 Science", "10th Standard"
+  wbsccInterest        Boolean           @default(false) // Interested in WB Student Credit Card
+  message              String?           @db.Text
+  status               EnquiryStatus     @default(NEW)
+  assignedToId         String?           // Staff member handling inquiry
+  source               String            @default("WEBSITE") // "WEBSITE", "DIRECT", "TOLL_FREE"
+  ipAddress            String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  // Relations
+  institution          Institution       @relation(fields: [institutionId], references: [id], onDelete: Restrict)
+  course               Course            @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  assignedTo           AdminUser?        @relation("AssignedEnquiries", fields: [assignedToId], references: [id], onDelete: SetNull)
+  activities           EnquiryActivity[]
+
+  @@index([institutionId])
+  @@index([courseId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model EnquiryActivity {
+  id           String    @id @default(cuid())
+  enquiryId    String
+  authorId     String?
+  activityType String    // "STATUS_CHANGE", "NOTE_ADDED", "CALL_LOGGED", "EMAIL_SENT"
+  notes        String    @db.Text
+  createdAt    DateTime  @default(now())
+
+  // Relations
+  enquiry      Enquiry   @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  author       AdminUser? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([enquiryId])
+}
+
+model AdminUser {
+  id                String            @id @default(cuid())
+  name              String
+  email             String            @unique
+  passwordHash      String
+  role              Role              @default(CONTENT_EDITOR)
+  institutionId     String?           // Scoped for INSTITUTION_ADMIN; null for SUPER_ADMIN
+  isActive          Boolean           @default(true)
+  lastLoginAt       DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relations
+  institution       Institution?      @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  assignedEnquiries Enquiry[]         @relation("AssignedEnquiries")
+  enquiryActivities EnquiryActivity[]
+  auditLogs         AuditLog[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Notice {
+  id            String       @id @default(cuid())
+  institutionId String?      // Null means group-wide notice across all four colleges
+  title         String
+  slug          String       @unique
+  category      String       @default("GENERAL") // "ADMISSION", "EXAMINATION", "EVENT", "ACADEMIC"
+  content       String       @db.Text
+  featuredImage String?
+  attachmentUrl String?      // Official PDF circular download link
+  isUrgent      Boolean      @default(false)
+  published     Boolean      @default(true)
+  publishedAt   DateTime     @default(now())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  // Relations
+  institution   Institution? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+
+  @@index([institutionId])
+  @@index([published])
+  @@index([publishedAt])
+}
+
+model Media {
+  id            String         @id @default(cuid())
+  institutionId String?
+  url           String
+  altText       String
+  caption       String?
+  category      MediaCategory  @default(CAMPUS)
+  fileType      String?        // "image/jpeg", "image/png", "image/svg+xml"
+  fileSize      Int?           // bytes
+  createdAt     DateTime       @default(now())
+
+  // Relations
+  institution   Institution?   @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+
+  @@index([institutionId])
+  @@index([category])
+}
+
+model SiteSettings {
+  id          String   @id @default(cuid())
+  key         String   @unique // e.g. "general_admissions_open", "helpline_directory"
+  value       String   @db.Text // JSON payload
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+}
+
+model AuditLog {
+  id         String     @id @default(cuid())
+  userId     String?
+  action     String     // e.g. "CREATE_COURSE", "UPDATE_ENQUIRY", "LOGIN_SUCCESS"
+  entityType String     // e.g. "Course", "Enquiry", "Institution"
+  entityId   String?
+  details    String?    @db.Text // JSON details of change
+  ipAddress  String?
+  createdAt  DateTime   @default(now())
+
+  // Relations
+  user       AdminUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}

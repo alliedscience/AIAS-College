@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap');
+
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@layer base {
+  :root {
+    --background: 45 33% 96%; /* #F7F5EF Warm Ivory */
+    --foreground: 212 66% 19%; /* #102D4F Deep Navy */
+    
+    --card: 0 0% 100%;
+    --card-foreground: 212 66% 19%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 212 66% 19%;
+    
+    --primary: 212 66% 19%; /* #102D4F Deep Navy */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 45 25% 91%; /* Warm Ivory Surface */
+    --secondary-foreground: 212 66% 19%;
+    
+    --muted: 214 20% 92%;
+    --muted-foreground: 215 16% 47%;
+    
+    --accent: 38 38% 55%; /* #B99A62 Muted Gold */
+    --accent-foreground: 212 66% 19%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 212 66% 19%;
+
+    /* Radius: Strictly rectangular / subtle rounded (NO PILL SHAPES) */
+    --radius: 0.25rem; /* 4px */
+  }
+
+  * {
+    @apply border-border;
+    min-width: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    background-color: #F7F5EF;
+    color: #102D4F;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    /* Prevent horizontal overflow on all devices including mobile */
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    @apply bg-ivory text-navy antialiased;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    /* Ensure body never forces a wider layout than viewport */
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    margin: 0;
+  }
+
+  /* Ensure all images scale properly on mobile */
+  img, svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Native controls and embedded content must never widen the page on phones. */
+  input, select, textarea, button, iframe {
+    max-width: 100%;
+  }
+
+  main {
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Prevent table / pre / code overflow */
+  table, pre, code {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    @apply tracking-tight text-navy;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+}
+
+@layer components {
+  /* Architectural Rectangular Buttons (Strictly NO pill shapes, touch-friendly 42px min height) */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-xs transition-all duration-200 select-none cursor-pointer border text-center min-h-[42px] leading-tight;
+  }
+
+  .btn-sm {
+    @apply text-[11px] px-3 py-1.5 min-h-[36px];
+  }
+
+  .btn-lg {
+    @apply text-xs sm:text-sm px-6 py-3.5 min-h-[46px];
+  }
+
+  .btn-primary {
+    @apply bg-navy text-white border-navy-950 hover:bg-navy-900 shadow-xs hover:shadow-sm active:translate-y-px;
+  }
+
+  .btn-gold {
+    @apply bg-gold text-navy-950 border-gold-dark hover:bg-gold-light shadow-xs hover:shadow-sm font-black active:translate-y-px;
+  }
+
+  .btn-outline-navy {
+    @apply bg-transparent text-navy border-navy hover:bg-navy hover:text-white active:translate-y-px;
+  }
+
+  .btn-outline-white {
+    @apply bg-transparent text-white border-white hover:bg-white hover:text-navy active:translate-y-px;
+  }
+
+  .btn-phone {
+    @apply bg-slate-100 text-navy border-slate-300 hover:bg-slate-200 font-mono font-bold active:translate-y-px;
+  }
+
+  /* Academic Container with Fluid Responsive Padding */
+  .academic-container {
+    @apply max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 w-full;
+  }
+
+  /* Mobile-safe section padding */
+  .section-padding {
+    @apply py-10 sm:py-14 lg:py-16;
+  }
+
+  /* Prevent long text from overflowing on small screens */
+  .mobile-safe-text {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+}

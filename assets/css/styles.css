@@ -77,11 +77,16 @@ html {
   line-height: 1.5;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   overflow-x: hidden;
   background-color: var(--cream-bg);
+  width: 100%;
+  min-width: 0;
 }
 
 img {
@@ -113,6 +118,7 @@ h1, h2, h3, h4, h5, h6 {
 .container {
   width: 100%;
   max-width: 1280px;
+  min-width: 0;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1.25rem;
@@ -1829,6 +1835,41 @@ h1, h2, h3, h4, h5, h6 {
 
   .footer-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Small phones: retain the full viewport width without a desktop-scale canvas. */
+@media (max-width: 600px) {
+  .container {
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+  }
+
+  .header-container {
+    min-width: 0;
+    gap: 0.5rem;
+  }
+
+  .brand-wrapper,
+  .header-cta-group,
+  .hero-text-col,
+  .hero-form-col {
+    min-width: 0;
+  }
+
+  .brand-identity {
+    overflow: hidden;
+  }
+
+  .brand-title,
+  .brand-subtitle,
+  .hero-headline,
+  .hero-description {
+    overflow-wrap: anywhere;
+  }
+
+  .section {
+    padding: 3rem 0;
   }
 }
 
