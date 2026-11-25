@@ -58,7 +58,7 @@ export function AdmissionEnquiryForm({
   const onSubmit = async (data: EnquiryFormValues) => {
     setErrorMessage("");
     try {
-      const response = await fetch("/api/enquiries", {
+      const response = await fetch("https://aias-college.onrender.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
