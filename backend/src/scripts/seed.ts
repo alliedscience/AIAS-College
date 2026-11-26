@@ -1,40 +1,45 @@
-import { PrismaClient, Role } from "@prisma/client";
+import "dotenv/config";
 import bcrypt from "bcryptjs";
+import { connectDatabase } from "../lib/db";
+import { Institution, Course, AdminUser, SiteSettings } from "../models";
 
-const prisma = new PrismaClient();
+async function seed() {
+  console.log("🌱 Starting AIAS Education Portal MongoDB Database Seeding (Mongoose)...");
 
-async function main() {
-  console.log("🌱 Starting AIAS Education Portal Database Seeding...");
+  const conn = await connectDatabase();
+  if (!conn) {
+    console.error("❌ Could not connect to MongoDB. Ensure MONGODB_URI is valid and MongoDB is running.");
+    process.exit(1);
+  }
 
   // ----------------------------------------------------------------------------
   // 1. Initial Super Administrator
   // ----------------------------------------------------------------------------
-  const adminEmail = process.env.INITIAL_ADMIN_EMAIL || "admin@aias.edu.in";
+  const adminEmail = (process.env.INITIAL_ADMIN_EMAIL || "admin@aias.edu.in").toLowerCase();
   const rawPassword = process.env.INITIAL_ADMIN_PASSWORD || "ChangeMe_AIAS2026!Secure";
   const passwordHash = await bcrypt.hash(rawPassword, 12);
 
-  const superAdmin = await prisma.adminUser.upsert({
-    where: { email: adminEmail },
-    update: { passwordHash, isActive: true },
-    create: {
+  const superAdmin = await AdminUser.findOneAndUpdate(
+    { email: adminEmail },
+    {
       name: "Portal Super Administrator",
       email: adminEmail,
       passwordHash,
-      role: Role.SUPER_ADMIN,
+      role: "SUPER_ADMIN",
       isActive: true,
     },
-  });
+    { upsert: true, new: true }
+  );
   console.log(`✅ Super Admin created/verified: ${superAdmin.email}`);
 
   // ----------------------------------------------------------------------------
-  // 2. The Four Institutions from Brochure ("AIAS P1.pdf")
+  // 2. The Four Institutions from Official Brochure ("AIAS P1.pdf")
   // ----------------------------------------------------------------------------
 
-  // Institution A: Asansol Institute of Allied Sciences (AIAS)
-  const aias = await prisma.institution.upsert({
-    where: { slug: "aias" },
-    update: {},
-    create: {
+  // Institution A: AIAS
+  const aias = await Institution.findOneAndUpdate(
+    { slug: "aias" },
+    {
       name: "Asansol Institute of Allied Sciences",
       shortName: "AIAS",
       slug: "aias",
@@ -48,28 +53,28 @@ async function main() {
       bannerImage: "/images/campus-hero.svg",
       address: "Burnpur Riverside Road, Asansol, West Bengal",
       phone: "1800 897 334",
-      altPhone: "1800897334", // Preserved from brochure variation
+      altPhone: "1800897334",
       email: "admissions@aias.edu.in",
       affiliation:
         "In Collaboration with The Marie Curie Centre for Interdisciplinary Sciences (MCCIS), Diamond Harbour Women's University (DHWU)",
       recognitions: "University Collaboration • WBSCC Approved • 100% Placement Wing",
       establishedYear: 2026,
-      theme: JSON.stringify({
-        primaryColor: "#102D4F", // Deep Navy
-        accentColor: "#14532D",  // Laurel Forest Green
-        goldColor: "#B99A62",    // Muted Gold
+      theme: {
+        primaryColor: "#102D4F",
+        accentColor: "#14532D",
+        goldColor: "#B99A62",
         badgeText: "ESTD: 2026",
-      }),
+      },
       published: true,
       displayOrder: 1,
     },
-  });
+    { upsert: true, new: true }
+  );
 
   // Institution B: Bijoy Pal Memorial B.Ed College
-  const bpmBed = await prisma.institution.upsert({
-    where: { slug: "bijoy-pal-memorial" },
-    update: {},
-    create: {
+  const bpmBed = await Institution.findOneAndUpdate(
+    { slug: "bijoy-pal-memorial" },
+    {
       name: "Bijoy Pal Memorial B.Ed College",
       shortName: "B.P.M. B.Ed",
       slug: "bijoy-pal-memorial",
@@ -86,21 +91,21 @@ async function main() {
       affiliation: "Affiliated to B.S.A.E.U. (Erstwhile W.B.U.T.T.E.P.A.)",
       recognitions: "Recognised by N.C.T.E. (National Council for Teacher Education)",
       establishedYear: 2007,
-      theme: JSON.stringify({
+      theme: {
         primaryColor: "#0B2545",
         accentColor: "#B99A62",
         badgeText: "ESTD: 2007 • NCTE",
-      }),
+      },
       published: true,
       displayOrder: 2,
     },
-  });
+    { upsert: true, new: true }
+  );
 
   // Institution C: Pramoth Nath Das Academy of Nursing
-  const pndNursing = await prisma.institution.upsert({
-    where: { slug: "pramoth-nath-das" },
-    update: {},
-    create: {
+  const pndNursing = await Institution.findOneAndUpdate(
+    { slug: "pramoth-nath-das" },
+    {
       name: "Pramoth Nath Das Academy of Nursing",
       shortName: "P.N.D. Nursing",
       slug: "pramoth-nath-das",
@@ -116,21 +121,21 @@ async function main() {
       email: "admissions@pndnursing.in",
       affiliation: "Affiliated to WBUHS (West Bengal University of Health Sciences)",
       recognitions: "Recognised by INC (Indian Nursing Council) & WBNC (West Bengal Nursing Council)",
-      theme: JSON.stringify({
+      theme: {
         primaryColor: "#044E54",
         accentColor: "#0A747C",
         badgeText: "INC • WBNC • WBUHS",
-      }),
+      },
       published: true,
       displayOrder: 3,
     },
-  });
+    { upsert: true, new: true }
+  );
 
   // Institution D: P.N. Das Academy (D.El.Ed College)
-  const pnDasDeled = await prisma.institution.upsert({
-    where: { slug: "pn-das-academy" },
-    update: {},
-    create: {
+  const pnDasDeled = await Institution.findOneAndUpdate(
+    { slug: "pn-das-academy" },
+    {
       name: "P.N. Das Academy (D.El.Ed College)",
       shortName: "P.N. Das D.El.Ed",
       slug: "pn-das-academy",
@@ -146,33 +151,25 @@ async function main() {
       email: "info@pndasacademy.in",
       affiliation: "Affiliated to West Bengal Board of Primary Education (WBBPE)",
       recognitions: "N.C.T.E. Recognised",
-      theme: JSON.stringify({
+      theme: {
         primaryColor: "#9A3412",
         accentColor: "#C2410C",
         badgeText: "NCTE • WBBPE",
-      }),
+      },
       published: true,
       displayOrder: 4,
     },
-  });
+    { upsert: true, new: true }
+  );
 
   console.log("✅ 4 Core Institutions seeded successfully.");
 
   // ----------------------------------------------------------------------------
-  // 3. Flagship Career Courses from Brochure
+  // 3. Flagship Career Courses
   // ----------------------------------------------------------------------------
-
-  // AIAS Courses (3 Diplomas, each 2 Years)
-  await prisma.course.upsert({
-    where: {
-      institutionId_slug: {
-        institutionId: aias.id,
-        slug: "agriculture",
-      },
-    },
-    update: {},
-    create: {
-      institutionId: aias.id,
+  const courses = [
+    {
+      institutionId: (aias as any)._id,
       name: "Diploma in Agriculture",
       shortName: "Dip. Agri",
       slug: "agriculture",
@@ -182,36 +179,25 @@ async function main() {
       duration: "2 Years",
       durationYears: 2.0,
       eligibility: "10+2 / Secondary Examination from any recognized Board/Council.",
-      curriculum: JSON.stringify([
+      curriculum: [
         "Fundamentals of Agronomy & Soil Science",
         "Plant Pathology & Crop Protection",
         "Commercial Horticulture & Hydroponics",
         "Organic Farming Systems & Farm Business",
-      ]),
-      careerProspects: JSON.stringify([
+      ],
+      careerProspects: [
         "Agricultural Extension Officer",
         "Smart Farm & Greenhouse Manager",
         "Soil Testing & Fertilizer Quality Supervisor",
         "Agripreneur / Commercial Farming Lead",
-      ]),
+      ],
       featuredImage: "/images/agriculture.svg",
       isCreditCardEligible: true,
       hasPlacementAssistance: true,
       displayOrder: 1,
-      published: true,
     },
-  });
-
-  await prisma.course.upsert({
-    where: {
-      institutionId_slug: {
-        institutionId: aias.id,
-        slug: "medical-laboratory-technology",
-      },
-    },
-    update: {},
-    create: {
-      institutionId: aias.id,
+    {
+      institutionId: (aias as any)._id,
       name: "Diploma in Medical Laboratory Technology (DMLT)",
       shortName: "DMLT",
       slug: "medical-laboratory-technology",
@@ -221,36 +207,25 @@ async function main() {
       duration: "2 Years",
       durationYears: 2.0,
       eligibility: "10+2 with Science (Physics, Chemistry, Biology/Mathematics) or equivalent.",
-      curriculum: JSON.stringify([
+      curriculum: [
         "Human Anatomy, Physiology & Lab Safety",
         "Clinical Biochemistry & Enzymology",
         "Medical Microbiology & Parasitology",
         "Hematology, Blood Banking & Hospital Internship",
-      ]),
-      careerProspects: JSON.stringify([
+      ],
+      careerProspects: [
         "Chief Medical Laboratory Technologist",
         "Pathology Diagnostic Center In-charge",
         "Hospital Blood Bank Technical Officer",
         "Clinical Research Laboratory Assistant",
-      ]),
+      ],
       featuredImage: "/images/dmlt.svg",
       isCreditCardEligible: true,
       hasPlacementAssistance: true,
       displayOrder: 2,
-      published: true,
     },
-  });
-
-  await prisma.course.upsert({
-    where: {
-      institutionId_slug: {
-        institutionId: aias.id,
-        slug: "veterinary-assistant",
-      },
-    },
-    update: {},
-    create: {
-      institutionId: aias.id,
+    {
+      institutionId: (aias as any)._id,
       name: "Diploma in Veterinary Assistant",
       shortName: "Dip. Vet",
       slug: "veterinary-assistant",
@@ -260,37 +235,25 @@ async function main() {
       duration: "2 Years",
       durationYears: 2.0,
       eligibility: "10+2 / Higher Secondary or Secondary examination from recognized board.",
-      curriculum: JSON.stringify([
+      curriculum: [
         "Veterinary Anatomy, Physiology & Restraint",
         "Clinical Pharmacology & Veterinary First Aid",
         "Livestock Disease Prevention & Immunization",
         "Surgical Assisting & Clinical Hospital Rotations",
-      ]),
-      careerProspects: JSON.stringify([
+      ],
+      careerProspects: [
         "Veterinary Hospital Clinical Assistant",
         "Livestock Development Healthcare Assistant",
         "Dairy & Poultry Farm Health In-charge",
         "Animal Welfare Center & Shelter Supervisor",
-      ]),
+      ],
       featuredImage: "/images/veterinary.svg",
       isCreditCardEligible: true,
       hasPlacementAssistance: true,
       displayOrder: 3,
-      published: true,
     },
-  });
-
-  // Bijoy Pal Memorial B.Ed Course
-  await prisma.course.upsert({
-    where: {
-      institutionId_slug: {
-        institutionId: bpmBed.id,
-        slug: "bed",
-      },
-    },
-    update: {},
-    create: {
-      institutionId: bpmBed.id,
+    {
+      institutionId: (bpmBed as any)._id,
       name: "Bachelor of Education (B.Ed)",
       shortName: "B.Ed",
       slug: "bed",
@@ -301,36 +264,24 @@ async function main() {
       durationYears: 2.0,
       eligibility:
         "Graduation or Post-Graduation with minimum 50% marks (45% for reserved categories) as per NCTE & BSAEU guidelines.",
-      curriculum: JSON.stringify([
-        "Method Subjects Offered (12): Bengali, English, Hindi, Sanskrit, Geography, History, Physical Science, Life Science, Mathematics, Political Science, Commerce, Computer Science",
+      curriculum: [
+        "Method Subjects (12): Bengali, English, Hindi, Sanskrit, Geography, History, Physical Science, Life Science, Mathematics, Political Science, Commerce, Computer Science",
         "Childhood and Growing Up",
         "Contemporary India and Education",
         "Learning and Teaching Pedagogy & School Internship",
-      ]),
-      careerProspects: JSON.stringify([
+      ],
+      careerProspects: [
         "Secondary School Teacher (TGT/PGT)",
         "Educational Counselor & Curriculum Developer",
         "Academic Content Specialist",
-      ]),
+      ],
       featuredImage: "/images/bpm-bed-logo.svg",
       isCreditCardEligible: true,
       hasPlacementAssistance: true,
       displayOrder: 1,
-      published: true,
     },
-  });
-
-  // Pramoth Nath Das Academy of Nursing Courses
-  await prisma.course.upsert({
-    where: {
-      institutionId_slug: {
-        institutionId: pndNursing.id,
-        slug: "gnm",
-      },
-    },
-    update: {},
-    create: {
-      institutionId: pndNursing.id,
+    {
+      institutionId: (pndNursing as any)._id,
       name: "General Nursing and Midwifery (G.N.M)",
       shortName: "G.N.M",
       slug: "gnm",
@@ -340,35 +291,24 @@ async function main() {
       duration: "3 Years",
       durationYears: 3.0,
       eligibility: "10+2 with English (min 40% aggregate) as per INC and WBNC norms.",
-      curriculum: JSON.stringify([
+      curriculum: [
         "Bio-Sciences, Anatomy, Physiology & Microbiology",
         "Behavioral Sciences & Psychology",
         "Nursing Foundations & First Aid",
         "Medical-Surgical Nursing, Child Health & Midwifery",
-      ]),
-      careerProspects: JSON.stringify([
+      ],
+      careerProspects: [
         "Staff Nurse in Government & Private Multi-Specialty Hospitals",
         "Community Health Officer (CHO)",
         "Critical Care Unit Nursing Specialist",
-      ]),
+      ],
       featuredImage: "/images/pnd-nursing-logo.svg",
       isCreditCardEligible: true,
       hasPlacementAssistance: true,
       displayOrder: 1,
-      published: true,
     },
-  });
-
-  await prisma.course.upsert({
-    where: {
-      institutionId_slug: {
-        institutionId: pndNursing.id,
-        slug: "bsc-nursing",
-      },
-    },
-    update: {},
-    create: {
-      institutionId: pndNursing.id,
+    {
+      institutionId: (pndNursing as any)._id,
       name: "Bachelor of Science in Nursing (B.Sc Nursing)",
       shortName: "B.Sc Nursing",
       slug: "bsc-nursing",
@@ -379,36 +319,24 @@ async function main() {
       durationYears: 4.0,
       eligibility:
         "10+2 with Science (PCB & English) with minimum 45% aggregate marks and WBJEE JENPAS-UG / relevant qualification.",
-      curriculum: JSON.stringify([
+      curriculum: [
         "Applied Anatomy, Physiology & Biochemistry",
         "Pharmacology, Pathology & Genetics",
         "Adult Health Nursing & Mental Health Nursing",
         "Nursing Research, Statistics & Hospital Administration",
-      ]),
-      careerProspects: JSON.stringify([
+      ],
+      careerProspects: [
         "Clinical Nursing Officer",
         "Nursing Educator / Tutor in Nursing Colleges",
         "Hospital Nurse Administrator",
-      ]),
+      ],
       featuredImage: "/images/pnd-nursing-logo.svg",
       isCreditCardEligible: true,
       hasPlacementAssistance: true,
       displayOrder: 2,
-      published: true,
     },
-  });
-
-  // P.N. Das Academy D.El.Ed Course
-  await prisma.course.upsert({
-    where: {
-      institutionId_slug: {
-        institutionId: pnDasDeled.id,
-        slug: "deled",
-      },
-    },
-    update: {},
-    create: {
-      institutionId: pnDasDeled.id,
+    {
+      institutionId: (pnDasDeled as any)._id,
       name: "Diploma in Elementary Education (D.El.Ed)",
       shortName: "D.El.Ed",
       slug: "deled",
@@ -419,36 +347,41 @@ async function main() {
       durationYears: 2.0,
       eligibility:
         "10+2 (Higher Secondary) with at least 50% marks (45% for SC/ST/OBC/PH) as per WBBPE guidelines.",
-      curriculum: JSON.stringify([
+      curriculum: [
         "Child Studies & Pedagogical Processes",
         "Teaching of Language & Environmental Science",
         "Foundational Mathematics Instruction",
         "School Internship & Action Research",
-      ]),
-      careerProspects: JSON.stringify([
+      ],
+      careerProspects: [
         "Primary School Teacher (Primary Education Board)",
         "Elementary Educator in Private / Public Schools",
         "Early Childhood Educational Facilitator",
-      ]),
+      ],
       featuredImage: "/images/pn-das-deled-logo.svg",
       isCreditCardEligible: true,
       hasPlacementAssistance: true,
       displayOrder: 1,
-      published: true,
     },
-  });
+  ];
 
-  console.log("✅ All known courses from brochure seeded successfully.");
+  for (const c of courses) {
+    await Course.findOneAndUpdate(
+      { institutionId: c.institutionId, slug: c.slug },
+      { ...c, published: true },
+      { upsert: true }
+    );
+  }
+  console.log("✅ All 7 courses from brochure seeded successfully.");
 
   // ----------------------------------------------------------------------------
   // 4. Initial Global Site Settings
   // ----------------------------------------------------------------------------
-  await prisma.siteSettings.upsert({
-    where: { key: "general_settings" },
-    update: {},
-    create: {
+  await SiteSettings.findOneAndUpdate(
+    { key: "general_settings" },
+    {
       key: "general_settings",
-      value: JSON.stringify({
+      value: {
         siteName: "AIAS Education Portal",
         primaryAddress: "Burnpur Riverside Road, Asansol, West Bengal",
         admissionsSession: "2026-2027",
@@ -463,20 +396,18 @@ async function main() {
           deledHelpline: "1800 891 1734 (Brochure P2)",
           status: "Preserved from source brochure; pending final client verification",
         },
-      }),
+      },
       description: "Core institutional settings and brochure verification metadata",
     },
-  });
+    { upsert: true }
+  );
 
   console.log("✅ Global site settings initialized.");
-  console.log("🎉 Database seeding completed successfully!");
+  console.log("🎉 MongoDB Seeding completed successfully!");
+  process.exit(0);
 }
 
-main()
-  .catch((e) => {
-    console.error("❌ Seeding error:", e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+seed().catch((err) => {
+  console.error("❌ Seeding error:", err);
+  process.exit(1);
+});

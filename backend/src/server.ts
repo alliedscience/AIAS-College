@@ -1,4 +1,5 @@
 import http, { IncomingMessage, ServerResponse } from "node:http";
+import { connectDatabase } from "./lib/db";
 import { handleHealth } from "./routes/health";
 import {
   handleAuthLogin,
@@ -187,4 +188,8 @@ server.listen(PORT, () => {
   console.log("🚀 AIAS Education Portal Dedicated Backend Engine");
   console.log(`📡 Listening on: http://localhost:${PORT}`);
   console.log("=================================================");
+  // Eagerly initiate database connection on startup
+  connectDatabase().catch((err) => {
+    console.warn("[DATABASE] Initial connection notice:", err?.message);
+  });
 });

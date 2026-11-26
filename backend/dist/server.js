@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_http_1 = __importDefault(require("node:http"));
+const db_1 = require("./lib/db");
 const health_1 = require("./routes/health");
 const auth_1 = require("./routes/auth");
 const institutions_1 = require("./routes/institutions");
@@ -155,4 +156,8 @@ server.listen(PORT, () => {
     console.log("🚀 AIAS Education Portal Dedicated Backend Engine");
     console.log(`📡 Listening on: http://localhost:${PORT}`);
     console.log("=================================================");
+    // Eagerly initiate database connection on startup
+    (0, db_1.connectDatabase)().catch((err) => {
+        console.warn("[DATABASE] Initial connection notice:", err?.message);
+    });
 });

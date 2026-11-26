@@ -1,3 +1,6 @@
+import { connectDatabase } from "../lib/db";
+import { SiteSettings } from "../models";
+
 export interface WebsiteSettings {
   portalName: string;
   admissionsSession: string;
@@ -86,7 +89,43 @@ let liveSettings: WebsiteSettings = {
 };
 
 export class SettingsRepository {
+  static async getSettingsAsync(): Promise<WebsiteSettings> {
+    try {
+      if (await connectDatabase()) {
+        const doc = await SiteSettings.findOne({ key: "general_settings" }).lean();
+        if (doc && doc.value) {
+          return typeof doc.value === "string" ? JSON.parse(doc.value) : (doc.value as WebsiteSettings);
+        }
+      }
+    } catch {
+      // Return memory fallback
+    }
+    return { ...liveSettings };
+  }
+
   static getSettings(): WebsiteSettings {
+    return { ...liveSettings };
+  }
+
+  static async updateSettingsAsync(partial: Partial<WebsiteSettings>): Promise<WebsiteSettings> {
+    liveSettings = {
+      ...liveSettings,
+      ...partial,
+      institutions: partial.institutions || liveSettings.institutions,
+    };
+
+    try {
+      if (await connectDatabase()) {
+        await SiteSettings.findOneAndUpdate(
+          { key: "general_settings" },
+          { key: "general_settings", value: liveSettings, description: "Core portal settings" },
+          { upsert: true, new: true }
+        );
+      }
+    } catch {
+      // Memory update already applied
+    }
+
     return { ...liveSettings };
   }
 
@@ -96,6 +135,8 @@ export class SettingsRepository {
       ...partial,
       institutions: partial.institutions || liveSettings.institutions,
     };
+    // Trigger async persistence in background
+    this.updateSettingsAsync(partial).catch(() => {});
     return { ...liveSettings };
   }
 }

@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SettingsRepository = void 0;
+const db_1 = require("../lib/db");
+const models_1 = require("../models");
 let liveSettings = {
     portalName: "AIAS Education Portal",
     admissionsSession: "2026-2027",
@@ -63,7 +65,37 @@ let liveSettings = {
     ],
 };
 class SettingsRepository {
+    static async getSettingsAsync() {
+        try {
+            if (await (0, db_1.connectDatabase)()) {
+                const doc = await models_1.SiteSettings.findOne({ key: "general_settings" }).lean();
+                if (doc && doc.value) {
+                    return typeof doc.value === "string" ? JSON.parse(doc.value) : doc.value;
+                }
+            }
+        }
+        catch {
+            // Return memory fallback
+        }
+        return { ...liveSettings };
+    }
     static getSettings() {
+        return { ...liveSettings };
+    }
+    static async updateSettingsAsync(partial) {
+        liveSettings = {
+            ...liveSettings,
+            ...partial,
+            institutions: partial.institutions || liveSettings.institutions,
+        };
+        try {
+            if (await (0, db_1.connectDatabase)()) {
+                await models_1.SiteSettings.findOneAndUpdate({ key: "general_settings" }, { key: "general_settings", value: liveSettings, description: "Core portal settings" }, { upsert: true, new: true });
+            }
+        }
+        catch {
+            // Memory update already applied
+        }
         return { ...liveSettings };
     }
     static updateSettings(partial) {
@@ -72,6 +104,8 @@ class SettingsRepository {
             ...partial,
             institutions: partial.institutions || liveSettings.institutions,
         };
+        // Trigger async persistence in background
+        this.updateSettingsAsync(partial).catch(() => { });
         return { ...liveSettings };
     }
 }

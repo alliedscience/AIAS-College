@@ -20,20 +20,15 @@
     "start:backend": "npm run start --workspace=backend",
     "typecheck": "npm run typecheck --workspace=frontend && npm run build --workspace=backend",
     "lint": "npm run lint --workspace=frontend",
-    "db:validate": "npm run db:validate --workspace=backend",
-    "db:generate": "npm run db:generate --workspace=backend",
-    "db:emit": "npm run db:emit --workspace=backend",
-    "db:push": "npm run db:push --workspace=backend",
-    "db:migrate": "npm run db:migrate --workspace=backend",
     "db:seed": "npm run db:seed --workspace=backend"
   },
   "dependencies": {
-    "@hookform/resolvers": "^7.0.9",
-    "@prisma/client": "^7.10.1",
+    "@hookform/resolvers": "^7.0.8",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "framer-motion": "^14.14.0",
-    "lucide-react": "^1.79.0",
+    "lucide-react": "^1.77.0",
+    "mongoose": "^8.12.1",
     "next": "^16.4.6",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -48,12 +43,11 @@
     "@types/react-dom": "^19.3.0",
     "autoprefixer": "^10.7.0",
     "dotenv": "^18.0.10",
-    "eslint": "^10.15.0",
+    "eslint": "^9.0.0",
     "eslint-config-next": "^16.4.6",
     "postcss": "^8.5.33",
-    "prisma": "^8.0.0-rc.35",
     "tailwindcss": "^4.3.5",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.0"
   }
 }

@@ -1,6 +1,6 @@
-import { db } from "../prisma/db";
+import { connectDatabase } from "../lib/db";
+import { Course, Enquiry, EnquiryActivity, Institution } from "../models";
 import { generateEnquiryNumber } from "../lib/utils";
-import { EnquiryFormValues } from "../lib/validations/enquiry";
 
 export interface StoredEnquiry {
   id: string;
@@ -18,7 +18,7 @@ export interface StoredEnquiry {
   city: string;
   state: string;
   notes?: string;
-  status: "NEW" | "CONTACTED" | "IN_REVIEW" | "ADMITTED" | "CLOSED";
+  status: "NEW" | "CONTACTED" | "IN_REVIEW" | "DOCUMENTS_PENDING" | "ADMITTED" | "CLOSED" | "REJECTED";
   source: string;
   createdAt: string;
   updatedAt: string;
@@ -208,31 +208,33 @@ export class EnquiryRepository {
       ],
     };
 
-    // Try saving to Prisma if DB is available
+    // Persist to MongoDB when configured; retain the memory fallback for local use.
     try {
-      if (prisma) {
-        const inst = await db.orm.public.Institution.where({
-          slug: data.institutionSlug,
-        }).first();
+      if (await connectDatabase()) {
+        const inst = await Institution.findOne({ slug: data.institutionSlug }).lean();
 
         if (inst) {
-          const course = await db.orm.public.Course.where({
-            institutionId: inst.id,
-            slug: data.courseSlug,
-          }).first();
+          const course = await Course.findOne({ institutionId: inst._id, slug: data.courseSlug }).lean();
 
           if (course) {
-            await db.orm.public.Enquiry.create({
+            const saved = await Enquiry.create({
               enquiryNumber,
               studentName: data.studentName,
               email: data.email || null,
               phone: data.phone,
-              institutionId: inst.id,
-              courseId: course.id,
+              institutionId: (inst as any)._id,
+              courseId: (course as any)._id,
               highestQualification: data.highestQualification || null,
               wbsccInterest: data.wbsccInterest ?? false,
               message: data.message || null,
               status: "NEW",
+              city: data.city || null,
+              state: data.state || null,
+            });
+            await EnquiryActivity.create({
+              enquiryId: saved._id,
+              activityType: "ENQUIRY_RECEIVED",
+              notes: "Enquiry registered in portal.",
             });
           }
         }
@@ -251,30 +253,29 @@ export class EnquiryRepository {
     status?: string;
     search?: string;
   }): Promise<StoredEnquiry[]> {
-    // Attempt Prisma first
+    // Attempt MongoDB first.
     try {
-      if (prisma) {
-        const dbEnquiries = await db.orm.public.Enquiry.include("institution")
-          .include("course")
-          .orderBy((enquiry) => enquiry.createdAt.desc())
-          .all();
+      if (await connectDatabase()) {
+        const query: Record<string, unknown> = {};
+        if (filters?.status && filters.status !== "ALL") query.status = filters.status;
+        const dbEnquiries = await Enquiry.find(query).populate("institutionId").populate("courseId").sort({ createdAt: -1 }).lean();
 
         if (dbEnquiries && dbEnquiries.length > 0) {
-          return dbEnquiries.map((e) => ({
-            id: e.id,
+          let result = dbEnquiries.map((e: any) => ({
+            id: e._id.toString(),
             enquiryNumber: e.enquiryNumber,
             studentName: e.studentName,
             candidateName: e.studentName,
             email: e.email || "",
             phone: e.phone,
-            institutionSlug: e.institution.slug,
-            institutionName: e.institution.name,
-            courseSlug: e.course?.slug || "general",
-            courseName: e.course?.name || "General Enquiry",
+            institutionSlug: e.institutionId?.slug || "general",
+            institutionName: e.institutionId?.name || "General Enquiry",
+            courseSlug: e.courseId?.slug || "general",
+            courseName: e.courseId?.name || "General Enquiry",
             highestQualification: e.highestQualification || "10+2",
             qualification: e.highestQualification || "10+2",
-            city: "Asansol",
-            state: "West Bengal",
+            city: e.city || "Asansol",
+            state: e.state || "West Bengal",
             notes: e.message || undefined,
             status: e.status as StoredEnquiry["status"],
             source: e.source || "Website",
@@ -282,6 +283,13 @@ export class EnquiryRepository {
             updatedAt: e.updatedAt.toISOString(),
             timeline: [],
           }));
+          if (filters?.institution && filters.institution !== "ALL") result = result.filter((e) => e.institutionSlug === filters.institution);
+          if (filters?.course && filters.course !== "ALL") result = result.filter((e) => e.courseSlug === filters.course);
+          if (filters?.search) {
+            const q = filters.search.toLowerCase();
+            result = result.filter((e) => e.studentName.toLowerCase().includes(q) || e.enquiryNumber.toLowerCase().includes(q) || e.phone.includes(q) || e.email.toLowerCase().includes(q) || e.city.toLowerCase().includes(q));
+          }
+          return result;
         }
       }
     } catch {
@@ -343,10 +351,9 @@ export class EnquiryRepository {
     };
 
     try {
-      if (prisma) {
-        await db.orm.public.Enquiry.whereUnique({ id: current.id }).update({
-          status,
-        });
+      if (await connectDatabase()) {
+        const stored = await Enquiry.findOneAndUpdate({ $or: [{ _id: current.id }, { enquiryNumber: current.enquiryNumber }] }, { status }, { new: true }).lean();
+        if (stored) await EnquiryActivity.create({ enquiryId: stored._id, activityType: `STATUS_CHANGE_TO_${status}`, notes: note || `Status updated to ${status}.` });
       }
     } catch {
       // Continue

@@ -1,4 +1,6 @@
 import bcrypt from "bcryptjs";
+import { connectDatabase } from "../lib/db";
+import { AdminUser, StudentUser } from "../models";
 
 export interface RegisteredUser {
   id: string;
@@ -15,7 +17,7 @@ export interface RegisteredUser {
   createdAt: string;
 }
 
-// In-memory persistent collection for user sessions and registrations
+// In-memory fallback collection for user sessions and local offline dev
 const usersStore: RegisteredUser[] = [
   {
     id: "user-demo-01",
@@ -60,6 +62,60 @@ export class UserRepository {
     coursePreference?: string;
     wbsccInterest?: boolean;
   }): Promise<{ user: Omit<RegisteredUser, "passwordHash">; token: string }> {
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(data.password, salt);
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const studentId = `AIAS-2026-STU-${randomSuffix}`;
+
+    // 1. Try MongoDB persistence
+    try {
+      if (await connectDatabase()) {
+        const existingStudent = await StudentUser.findOne({
+          $or: [{ email: data.email.toLowerCase().trim() }, { phone: data.phone.trim() }],
+        }).lean();
+
+        if (existingStudent) {
+          throw new Error("An account with this email address or phone number already exists.");
+        }
+
+        const created = await StudentUser.create({
+          studentId,
+          fullName: data.fullName.trim(),
+          email: data.email.toLowerCase().trim(),
+          phone: data.phone.trim(),
+          passwordHash,
+          role: "STUDENT",
+          institutionPreference: data.institutionPreference || "Asansol Institute of Allied Sciences (AIAS)",
+          coursePreference: data.coursePreference || "Diploma in Medical Laboratory Technology (DMLT)",
+          wbsccInterest: data.wbsccInterest ?? true,
+          applicationStatus: "REGISTERED",
+        });
+
+        const safeUser: Omit<RegisteredUser, "passwordHash"> = {
+          id: (created as any)._id.toString(),
+          studentId: created.studentId,
+          fullName: created.fullName,
+          email: created.email,
+          phone: created.phone,
+          role: "STUDENT",
+          institutionPreference: created.institutionPreference,
+          coursePreference: created.coursePreference,
+          wbsccInterest: created.wbsccInterest,
+          applicationStatus: created.applicationStatus as RegisteredUser["applicationStatus"],
+          createdAt: (created as any).createdAt ? (created as any).createdAt.toISOString() : new Date().toISOString(),
+        };
+
+        const token = `aias_token_${safeUser.id}_${Date.now()}`;
+        return { user: safeUser, token };
+      }
+    } catch (err: any) {
+      if (err.message && err.message.includes("already exists")) {
+        throw err;
+      }
+      // Continue to fallback store
+    }
+
+    // 2. In-memory store fallback
     const existing = usersStore.find(
       (u) =>
         u.email.toLowerCase() === data.email.toLowerCase() ||
@@ -72,13 +128,9 @@ export class UserRepository {
       );
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(data.password, salt);
-
-    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const newUser: RegisteredUser = {
       id: `user-${Date.now()}`,
-      studentId: `AIAS-2026-STU-${randomSuffix}`,
+      studentId,
       fullName: data.fullName.trim(),
       email: data.email.toLowerCase().trim(),
       phone: data.phone.trim(),
@@ -108,6 +160,58 @@ export class UserRepository {
     password: string
   ): Promise<{ user: Omit<RegisteredUser, "passwordHash">; token: string } | null> {
     const identifier = emailOrPhone.toLowerCase().trim();
+
+    // 1. Try MongoDB authentication
+    try {
+      if (await connectDatabase()) {
+        // Check AdminUser first
+        const admin = await AdminUser.findOne({ email: identifier, isActive: true }).lean();
+        if (admin && (await bcrypt.compare(password, admin.passwordHash))) {
+          const safeAdmin: Omit<RegisteredUser, "passwordHash"> = {
+            id: (admin as any)._id.toString(),
+            studentId: "AIAS-ADMIN-001",
+            fullName: admin.name,
+            email: admin.email,
+            phone: "1800897334",
+            role: "ADMIN",
+            institutionPreference: "Central Administrative Secretariat",
+            coursePreference: "All Academic Wings",
+            wbsccInterest: false,
+            applicationStatus: "ADMITTED",
+            createdAt: (admin as any).createdAt ? (admin as any).createdAt.toISOString() : new Date().toISOString(),
+          };
+          const token = `aias_token_${safeAdmin.id}_${Date.now()}`;
+          return { user: safeAdmin, token };
+        }
+
+        // Check StudentUser
+        const student = await StudentUser.findOne({
+          $or: [{ email: identifier }, { phone: identifier }],
+        }).lean();
+
+        if (student && (await bcrypt.compare(password, student.passwordHash))) {
+          const safeStudent: Omit<RegisteredUser, "passwordHash"> = {
+            id: (student as any)._id.toString(),
+            studentId: student.studentId,
+            fullName: student.fullName,
+            email: student.email,
+            phone: student.phone,
+            role: "STUDENT",
+            institutionPreference: student.institutionPreference,
+            coursePreference: student.coursePreference,
+            wbsccInterest: student.wbsccInterest,
+            applicationStatus: student.applicationStatus as RegisteredUser["applicationStatus"],
+            createdAt: (student as any).createdAt ? (student as any).createdAt.toISOString() : new Date().toISOString(),
+          };
+          const token = `aias_token_${safeStudent.id}_${Date.now()}`;
+          return { user: safeStudent, token };
+        }
+      }
+    } catch {
+      // Fallback to memory
+    }
+
+    // 2. In-memory authentication fallback
     const user = usersStore.find(
       (u) => u.email.toLowerCase() === identifier || u.phone === identifier
     );
